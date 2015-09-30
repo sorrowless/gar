@@ -27,7 +27,9 @@ Arguments:
 """
 # TODO(sbog): add groups of users in file with addresses
 
+import configparser
 from docopt import docopt
+import getpass
 import logging
 import os
 import paramiko
@@ -47,6 +49,15 @@ if __name__ == '__main__':
     comm = 'gerrit set-reviewers '
     pkpass = ''
 
+    # Try to read config file. Command line arguments will have
+    # preference over config directives
+    try:
+        with open(os.path.expanduser('~/.gar/config') as f:
+            conffile = configparser.ConfigParser()
+            conffile.read(f)
+    except FileNotFoundError:
+        conffile = []
+
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     # Try to load password for private key
@@ -59,6 +70,10 @@ if __name__ == '__main__':
             logger.critical("Sorry, file with credentials was not found, exiting..")
             logger.debug(traceback.format_exc())
             sys.exit(1)
+
+    # We will set some configuration directives prior to use them, cause there
+    # are several places where we could get configs
+    # TODO(sbog): implement config file merge
 
     # Load private key
     if pkpass:
