@@ -37,18 +37,16 @@ import socket
 import sys
 import traceback
 
-if __name__ == '__main__':
-
+def readoptions():
     args = docopt(__doc__, version='0.2')
     loglevel = (5 - args['-v'])*10 if args['-v'] < 5 else 10
     logging.basicConfig(level = loglevel,
                         format='%(asctime)s %(name)-14s %(levelname)-9s %(message)s')
     logger = logging.getLogger('gar.main')
     logger.info(args)
+    return args, logger
 
-    comm = 'gerrit set-reviewers '
-    pkpass = ''
-
+def readconfig():
     # Try to read config file. Command line arguments will have
     # preference over config directives
     try:
@@ -57,10 +55,11 @@ if __name__ == '__main__':
             conffile.read(f)
     except FileNotFoundError:
         conffile = []
+    return conffile
 
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+def readPrivateKeyPassword(args, logger):
     # Try to load password for private key
+    pkpass = ''
     if args['--keypass']: pkpass = args['--keypass']
     elif args['--passfile']:
         try:
@@ -70,11 +69,14 @@ if __name__ == '__main__':
             logger.critical("Sorry, file with credentials was not found, exiting..")
             logger.debug(traceback.format_exc())
             sys.exit(1)
+    return pkpass
 
+def connect(args, logger, pkpass):
     # We will set some configuration directives prior to use them, cause there
     # are several places where we could get configs
     # TODO(sbog): implement config file merge
-
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     # Load private key
     if pkpass:
         try:
@@ -97,7 +99,16 @@ if __name__ == '__main__':
             logger.critical('Auth failed. Exiting...')
             logger.debug(traceback.format_exc())
             sys.exit(1)
+    return client
 
+
+
+if __name__ == '__main__':
+    args, logger = readoptions()
+    comm = 'gerrit set-reviewers '
+    pkpass = readPrivateKeyPassword(args, logger)
+    conffile = readconfig()
+    client = connect()
 
     # Load reviewers from addresses file
     try:
