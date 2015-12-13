@@ -1,2 +1,4 @@
 .tox
-egg-info
+gar.egg-info
+dist
+.cache

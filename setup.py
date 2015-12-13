@@ -4,8 +4,11 @@ import glob
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), 'r') as f:
   long_description = f.read()
+
+with open(path.join(here, 'requirements.txt'), 'r') as f:
+  required_packages = f.read()
 
 setup(name='gar',
       version='0.1.0',
@@ -20,6 +23,7 @@ setup(name='gar',
       license="GPL",
 
       packages=['gar'],
+      install_requires=required_packages,
 
       package_data= {
         '': ['requirements.txt','README.md'],
