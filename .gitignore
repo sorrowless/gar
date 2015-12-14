@@ -2,3 +2,4 @@
 gar.egg-info
 dist
 .cache
+*.pyc
