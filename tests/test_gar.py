@@ -1,8 +1,17 @@
+import builtins
+import io
 import pytest
 import docopt
 import sys
 from gar.gar import Options, Gar
-from mock import patch
+from unittest.mock import patch, MagicMock
+
+class FakeFile(io.StringIO):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
 
 class TestOptions:
     @pytest.fixture
@@ -22,6 +31,35 @@ class TestOptions:
                 --project {} \
                 --addresses {} 235550".format(key, keypass, host, port, user,
                         project, addresses)
+
+    @pytest.fixture
+    def configfile(self):
+        data = """{
+            "--key": "/root/newkey",
+            "--keypass": "newPassword",
+            "--host": "newhost.localhost",
+            "--port": "44744",
+            "--user": "newUser",
+            "--project": "projectTwo",
+            "--addresses": "/root/newReviewers"
+        }
+        """
+        return data
+
+    @pytest.fixture
+    def mock_open(self, configfile, filename='file.yaml'):
+        """Mocks builtin open function.
+        Usage example:
+            with mock.patch(
+                '__builtin__.open',
+                self.mock_open('file content')
+            ):
+                # call some methods that are used open() to read some
+                # stuff internally
+        """
+        fileobj = FakeFile(configfile)
+        setattr(fileobj, 'name', filename)
+        return MagicMock(spec=str, return_value=fileobj)
 
     def test_without_arguments(self):
         with pytest.raises(docopt.DocoptExit):
@@ -74,6 +112,15 @@ class TestOptions:
             o = Options()
             assert o.args.get("-v") == i
 
-#    def test_options_configfile(self, opts)
-#        with patch
+#    def test_options_configfile(self, opts, configfile, mock_open):
+#        sys.argv = opts
+#        fileobj = FakeFile(configfile)
+#
+#        with patch.object(builtins, 'open', return_value=mock_open):
+#            o = Options()
+#        #m = mock_open(read_data=configfile)
+#        #m.return_value = MagicMock(spec=io.IOBase)
+#        #with patch.object(builtins, 'open', m):
+#        #    o = Options()
+#        assert o.conffile != {}
 
