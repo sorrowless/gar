@@ -29,7 +29,7 @@ Arguments:
 
 import json
 from docopt import docopt
-import getpass
+from getpass import getuser
 import logging
 import os
 import paramiko
@@ -57,6 +57,12 @@ class Options():
             self._optionsMerge()
         else:
             self.options = self.args
+        # We should place default username if there are no user set by options
+        # Be aware, self.args is a Hash, it means that it is one object with
+        # self.options
+        if not self.args['--user']:
+            self.args['--user'] = getuser()
+        self.logger.info('End options is: ' + str(self.options))
 
 
     def _readOptions(self):
@@ -71,7 +77,7 @@ class Options():
         logging.basicConfig(level = loglevel,
                 format='%(asctime)s %(name)-30s %(levelname)-9s %(message)s')
         self.logger = logging.getLogger('gar.main')
-        self.logger.info(self.args)
+        self.logger.debug('Passed arguments is: ' + str(self.args))
 
 
     def _readConfig(self):
@@ -80,7 +86,7 @@ class Options():
         try:
             with open(os.path.expanduser('~/.gar/config'), 'r') as f:
                 self.conffile = json.loads(f)
-        except FileNotFoundError:
+        except IOError:
             self.logger.info("Config file not found. Only command-line options will be used")
 
     def _optionsMerge(self):
@@ -154,9 +160,14 @@ class Gar():
                                key_filename=os.path.expanduser(self.options['--key']),
                                port=int(self.options['--port']))
             except paramiko.ssh_exception.PasswordRequiredException:
-                self.logger.critical('Auth with provided credentials failed. Private key is encrypted? Exiting...')
+                self.logger.critical('Auth with provided credentials failed. Private key is encrypted?')
                 self.logger.debug(traceback.format_exc())
                 sys.exit(1)
+            except paramiko.ssh_exception.AuthenticationException:
+                self.logger.critical('Auth with provided credentials failed. User differs from "{user}"? Exiting...'.format(user=self.options['--user']))
+                self.logger.debug(traceback.format_exc())
+                sys.exit(1)
+
 
 
     def addReviewers(self):
