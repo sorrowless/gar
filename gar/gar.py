@@ -95,7 +95,7 @@ class Options():
         config directives.
         """
         self.logger.debug("start options merge")
-        self.options = dict((str(key), args.get(key) or self.conffile.get(key)) for key in
+        self.options = dict((str(key), self.args.get(key) or self.conffile.get(key)) for key in
                             set(self.args) | set(self.conffile))
 
 

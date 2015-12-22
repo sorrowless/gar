@@ -4,14 +4,8 @@ import pytest
 import docopt
 import sys
 from gar.gar import Options, Gar
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock, MagicMock, mock_open
 
-class FakeFile(io.StringIO):
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        pass
 
 class TestOptions:
     @pytest.fixture
@@ -45,21 +39,6 @@ class TestOptions:
         }
         """
         return data
-
-    @pytest.fixture
-    def mock_open(self, configfile, filename='file.yaml'):
-        """Mocks builtin open function.
-        Usage example:
-            with mock.patch(
-                '__builtin__.open',
-                self.mock_open('file content')
-            ):
-                # call some methods that are used open() to read some
-                # stuff internally
-        """
-        fileobj = FakeFile(configfile)
-        setattr(fileobj, 'name', filename)
-        return MagicMock(spec=str, return_value=fileobj)
 
     def test_without_arguments(self):
         with pytest.raises(docopt.DocoptExit):
@@ -112,15 +91,16 @@ class TestOptions:
             o = Options()
             assert o.args.get("-v") == i
 
-#    def test_options_configfile(self, opts, configfile, mock_open):
-#        sys.argv = opts
-#        fileobj = FakeFile(configfile)
-#
-#        with patch.object(builtins, 'open', return_value=mock_open):
-#            o = Options()
-#        #m = mock_open(read_data=configfile)
-#        #m.return_value = MagicMock(spec=io.IOBase)
-#        #with patch.object(builtins, 'open', m):
-#        #    o = Options()
-#        assert o.conffile != {}
+    def test_options_configfile(self, opts, configfile):
+        sys.argv = opts
+
+        file_spec = [ '__enter__', '__exit__' ]
+        m = MagicMock(spec=file_spec)
+        handle = MagicMock(spec=file_spec)
+        handle.__enter__.return_value = configfile
+        m.return_value = handle
+
+        with patch('builtins.open', m):
+            o = Options()
+        assert o.conffile != {}
 
