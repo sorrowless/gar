@@ -1,6 +1,7 @@
 Gar
 ===
 [![Build Status](https://travis-ci.org/sorrowless/gar.svg?branch=master)](https://travis-ci.org/sorrowless/gar)
+[![codecov.io](https://codecov.io/github/sorrowless/gar/coverage.svg?branch=master)](https://codecov.io/github/sorrowless/gar?branch=master)
 
 Description
 -----------
