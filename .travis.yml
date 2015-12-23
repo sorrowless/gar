@@ -1,0 +1,8 @@
+---
+language: python
+script:
+  - tox
+install:
+  - pip install tox
+env:
+  - TOXENV=py34
