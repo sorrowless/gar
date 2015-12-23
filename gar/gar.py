@@ -12,14 +12,14 @@ Options:
     -v                    verbosity level. Use more than one time to raise level (like -vvvv)
     -h --help             show this help
     --version             show version
-    -k --key KEY          set path to private key [default: ~/.ssh/id_rsa]
+    -k --key KEY          set path to private key (example: ~/.ssh/id_rsa)
     --keypass KEYPASS     private key password if it exist
     --passfile PASSFILE   file with password for private key
-    -s --host HOST        set remote host address [default: review.openstack.org]
-    -p --port PORT        set remote port [default: 29418]
-    -u --user USER        username which will connect to remote server [default is your username]
-    --project PROJECT     gerrit project which consist a commit [default: openstack/fuel-library]
-    -a --addresses ADDRS  file with emails of reviewers to be added [default: ~/.gar/reviewers]
+    -s --host HOST        set remote host address (example: review.openstack.org)
+    -p --port PORT        set remote port (example: 29418)
+    -u --user USER        username which will connect to remote server (example is your username)
+    --project PROJECT     gerrit project which consist a commit (example: openstack/fuel-library)
+    -a --addresses ADDRS  file with emails of reviewers to be added (example: ~/.gar/reviewers)
 
 Arguments:
     CHANGE_ID  gerrit Change-Id number

@@ -4,6 +4,8 @@ paramiko==1.16.0
 pluggy==0.3.1
 py==1.4.31
 pycrypto==2.6.1
+PyHamcrest==1.8.5
+six==1.10.0
 tox==2.3.0
 virtualenv==13.1.2
 wheel==0.24.0
