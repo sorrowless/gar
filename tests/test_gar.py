@@ -48,7 +48,7 @@ class TestOptions:
     @pytest.fixture
     def configMock(self, configfile):
         file_spec = [ '__enter__', '__exit__' ]
-        m = MagicMock(spec=file_spec)
+        m = Mock()
         handle = MagicMock(spec=file_spec)
         handle.__enter__.return_value = configfile
         m.return_value = handle
@@ -180,10 +180,45 @@ class TestGar:
                 --addresses {} 235550".format(key, keypass, host, port, user,
                         project, addresses)
 
+    @pytest.fixture
+    def fileOpts(self):
+        key = '/root/test'
+        passfile = '/root/.ssh/id_rsa'
+        host = 'review.localhost'
+        port = '44544'
+        user = 'testUser'
+        project = 'newProject'
+        addresses = '/root/reviewers'
+        return " --key {} \
+                --passfile {} \
+                --host {} \
+                --port {} \
+                --user {} \
+                --project {} \
+                --addresses {} 235550".format(key, passfile, host, port, user,
+                        project, addresses)
+
+    @pytest.fixture
+    def keyFile(self):
+        return "privatekeypassword"
+
+    @pytest.fixture
+    def fileMock(self, keyFile):
+        m = mock_open(read_data=keyFile)
+        return m
+
     def test_readPrivateKeyPassword(self, opts):
         sys.argv = opts
         o = Options()
         c = Gar(o.options, o.logger)
         c.readPrivateKeyPassword()
         assert_that(c.pkeypassword, equal_to(o.options.get("--keypass")))
+
+    def test_readPrivateKeyFile(self, fileOpts, fileMock):
+        sys.argv = fileOpts
+        o = Options()
+        c = Gar(o.options, o.logger)
+        with patch('builtins.open', fileMock):
+            c.readPrivateKeyPassword()
+        assert_that(c.pkeypassword, equal_to("privatekeypassword"))
 
