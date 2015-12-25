@@ -207,6 +207,15 @@ class TestGar:
         m = mock_open(read_data=keyFile)
         return m
 
+    @pytest.fixture
+    def addrFile(self):
+        return "testuser@example.com"
+
+    @pytest.fixture
+    def addrMock(self, addrFile):
+        m = mock_open(read_data=addrFile)
+        return m
+
     def test_readPrivateKeyPassword(self, opts):
         sys.argv = opts
         o = Options()
@@ -222,3 +231,15 @@ class TestGar:
             c.readPrivateKeyPassword()
         assert_that(c.pkeypassword, equal_to("privatekeypassword"))
 
+    def test_loadReviewers(self, opts, addrMock):
+        sys.argv = opts
+        o = Options()
+        c = Gar(o.options, o.logger)
+        c.readPrivateKeyPassword()
+        with patch('builtins.open', addrMock):
+            c.loadReviewers()
+        assert_that(c.addrs, equal_to(["testuser@example.com"]))
+
+# it would be nice to refactor all of this and write some tests for
+# connect and addReviewers methods, but I maybe will do it in some
+# spare time. TODO(sbog):write other tests.

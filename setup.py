@@ -11,7 +11,7 @@ with open(path.join(here, 'requirements.txt'), 'r') as f:
   required_packages = f.read()
 
 setup(name='gar',
-      version='0.1.1',
+      version='0.1.2',
 
       author="Stanislaw Bogatkin",
       author_email="sbog@sbog.ru",

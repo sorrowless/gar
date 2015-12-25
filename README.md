@@ -38,16 +38,17 @@ Today it have next settings:
 * "--keypass": <private key password if it exist>
 * "--passfile": <file with password for private key if you don't want to store
   password to your private key in config file>
-* "--host": <set remote host address [default: review.openstack.org]>
-* "--port": <set remote port [default: 29418]>
+* "--host": <set remote host address (example: review.openstack.org)>
+* "--port": <set remote port (example: 29418)>
 * "--user": <username which will connect to remote server [default is your
   username]>
-* "--project": <gerrit project which consist a commit [default:
-  openstack/fuel-library]>
-* "--addresses": <file with emails of reviewers to be added [default:
-  ~/.gar/reviewers]>
+* "--project": <gerrit project which consist a commit (example:
+  openstack/fuel-library)>
+* "--addresses": <file with emails of reviewers to be added (example:
+  ~/.gar/reviewers)>
 
-Settings file should be placed in:
+Settings file should be placed in json file with keys as a options names and
+values as a options values here:
 
 * ~/.gar/config
 
