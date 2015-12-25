@@ -11,9 +11,13 @@ standard gerrit add-reviewers tool to conveniently adding group of users.
 
 Installation
 ------------
-To install gar from PyPI, simply run
+To install gar, download it from github:
 
-``$ pip install gar``
+``$ git clone https://github.com/sorrowless/gar``
+
+then go to gar directory and run
+
+``$ python setup.py install``
 
 It will download and install it with all requirements.
 
