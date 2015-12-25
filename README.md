@@ -13,7 +13,7 @@ Installation
 ------------
 To install gar from PyPI, simply run
 
-``$ pip install batticon``
+``$ pip install gar``
 
 It will download and install it with all requirements.
 
