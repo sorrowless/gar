@@ -1,11 +1,9 @@
-import builtins
-import io
 import pytest
-from hamcrest import *
+from hamcrest import *  # noqa
 import docopt
 import sys
 from gar.gar import Options, Gar
-from unittest.mock import patch, Mock, MagicMock, mock_open
+from unittest.mock import patch, mock_open
 
 
 class TestOptions:
@@ -25,7 +23,7 @@ class TestOptions:
                 --user {} \
                 --project {} \
                 --addresses {} 235550".format(key, keypass, host, port, user,
-                        project, addresses)
+                                              project, addresses)
 
     @pytest.fixture
     def shortOpts(self):
@@ -47,16 +45,12 @@ class TestOptions:
 
     @pytest.fixture
     def configMock(self, configfile):
-        file_spec = [ '__enter__', '__exit__' ]
-        m = Mock()
-        handle = MagicMock(spec=file_spec)
-        handle.__enter__.return_value = configfile
-        m.return_value = handle
+        m = mock_open(read_data=configfile)
         return m
 
     def test_without_arguments(self):
         with pytest.raises(docopt.DocoptExit):
-            o = Options()
+            o = Options()  # noqa
 
     def test_with_change_id(self):
         sys.argv = '101010'
@@ -99,7 +93,7 @@ class TestOptions:
         assert_that(o.args.get("--addresses"), equal_to('/root/reviewers'))
 
     def test_options_verbosity(self, opts):
-        for i in range(1,6):
+        for i in range(1, 6):
             newopts = opts + ' -' + 'v'*i
             sys.argv = newopts
             o = Options()
@@ -153,12 +147,15 @@ class TestOptions:
         assert_that(o.conffile.get("--project"), equal_to("projectTwo"))
         assert_that(o.options.get("--project"), equal_to("projectTwo"))
 
-    def test_options_configfile_overrides_addresses(self, shortOpts, configMock):
+    def test_options_configfile_overrides_addresses(self,
+                                                    shortOpts, configMock):
         sys.argv = shortOpts
         with patch('builtins.open', configMock):
             o = Options()
-        assert_that(o.conffile.get("--addresses"), equal_to("/root/newReviewers"))
-        assert_that(o.options.get("--addresses"), equal_to("/root/newReviewers"))
+        assert_that(o.conffile.get("--addresses"),
+                    equal_to("/root/newReviewers"))
+        assert_that(o.options.get("--addresses"),
+                    equal_to("/root/newReviewers"))
 
 
 class TestGar:
@@ -178,7 +175,7 @@ class TestGar:
                 --user {} \
                 --project {} \
                 --addresses {} 235550".format(key, keypass, host, port, user,
-                        project, addresses)
+                                              project, addresses)
 
     @pytest.fixture
     def fileOpts(self):
@@ -196,7 +193,7 @@ class TestGar:
                 --user {} \
                 --project {} \
                 --addresses {} 235550".format(key, passfile, host, port, user,
-                        project, addresses)
+                                              project, addresses)
 
     @pytest.fixture
     def keyFile(self):
